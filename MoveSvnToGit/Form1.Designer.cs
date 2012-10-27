@@ -38,9 +38,9 @@
 			this.textBoxMessages = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.numericUpDownStartSvnRevisionNumber = new System.Windows.Forms.NumericUpDown();
-			this.label5 = new System.Windows.Forms.Label();
 			this.checkBoxStandardLayout = new System.Windows.Forms.CheckBox();
 			this.checkBoxInitRepo = new System.Windows.Forms.CheckBox();
+			this.buttonAllInFolder = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownStartSvnRevisionNumber)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -166,19 +166,10 @@
             0,
             -2147483648});
 			// 
-			// label5
-			// 
-			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(33, 39);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(84, 13);
-			this.label5.TabIndex = 8;
-			this.label5.Text = "Standard layout:";
-			// 
 			// checkBoxStandardLayout
 			// 
 			this.checkBoxStandardLayout.AutoSize = true;
-			this.checkBoxStandardLayout.Location = new System.Drawing.Point(126, 38);
+			this.checkBoxStandardLayout.Location = new System.Drawing.Point(56, 38);
 			this.checkBoxStandardLayout.Name = "checkBoxStandardLayout";
 			this.checkBoxStandardLayout.Size = new System.Drawing.Size(231, 17);
 			this.checkBoxStandardLayout.TabIndex = 2;
@@ -195,14 +186,25 @@
 			this.checkBoxInitRepo.Text = "Init repo";
 			this.checkBoxInitRepo.UseVisualStyleBackColor = true;
 			// 
+			// buttonAllInFolder
+			// 
+			this.buttonAllInFolder.Location = new System.Drawing.Point(12, 331);
+			this.buttonAllInFolder.Name = "buttonAllInFolder";
+			this.buttonAllInFolder.Size = new System.Drawing.Size(75, 23);
+			this.buttonAllInFolder.TabIndex = 10;
+			this.buttonAllInFolder.Text = "All in folder";
+			this.buttonAllInFolder.UseVisualStyleBackColor = true;
+			this.buttonAllInFolder.Visible = false;
+			this.buttonAllInFolder.Click += new System.EventHandler(this.buttonAllInFolder_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(578, 366);
+			this.Controls.Add(this.buttonAllInFolder);
 			this.Controls.Add(this.checkBoxInitRepo);
 			this.Controls.Add(this.checkBoxStandardLayout);
-			this.Controls.Add(this.label5);
 			this.Controls.Add(this.numericUpDownStartSvnRevisionNumber);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.textBoxMessages);
@@ -213,6 +215,7 @@
 			this.Controls.Add(this.textBoxLocalGitClonedFolder);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.textBoxSvnUrl);
+			this.DoubleBuffered = true;
 			this.Name = "Form1";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Move SVN to Git";
@@ -235,9 +238,9 @@
 		private System.Windows.Forms.TextBox textBoxMessages;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.NumericUpDown numericUpDownStartSvnRevisionNumber;
-		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.CheckBox checkBoxStandardLayout;
 		private System.Windows.Forms.CheckBox checkBoxInitRepo;
+		private System.Windows.Forms.Button buttonAllInFolder;
 	}
 }
 

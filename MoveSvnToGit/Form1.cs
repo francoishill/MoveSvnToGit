@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Windows.Forms;
 using SharedClasses;
-using System.Diagnostics;
 
 namespace MoveSvnToGit
 {
 	public partial class Form1 : Form
 	{
-		Dictionary<TextBox, string> textboxesWithInitialWatermarkText = new Dictionary<TextBox, string>();
-
 		/* Inststructions to make use of svn://localhost
 		 * In TortoiseSVN\bin (or Subversion\bin) forlder run svnserve.exe as follows:
 		 * svnserve.exe --daemon --root c:\francois\dev\repos\vsprojects
@@ -23,9 +17,15 @@ namespace MoveSvnToGit
 		 * svn://localhost/windowsstartupmanager
 		 */
 
+		Dictionary<TextBox, string> textboxesWithInitialWatermarkText = new Dictionary<TextBox, string>();
+		List<MoveFromSvnToGit> foldersToMove = new List<MoveFromSvnToGit>();
+
 		public Form1()
 		{
 			InitializeComponent();
+
+			ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
+			buttonAllInFolder.Visible = Directory.Exists(@"C:\Francois\Dev\VSprojects");
 
 			textboxesWithInitialWatermarkText.Add(textBoxSvnUrl, textBoxSvnUrl.Text);
 			textboxesWithInitialWatermarkText.Add(textBoxLocalGitClonedFolder, textBoxLocalGitClonedFolder.Text);
@@ -45,12 +45,21 @@ namespace MoveSvnToGit
 			textBoxRemoteGitRepo.Text = @"C:\ProgrammingGit\_repos\GLSCore6";*/
 		}
 
-		private const string GitExePath = @"C:\Program Files (x86)\Git\bin\git.exe";
 		private void Form1_Shown(object sender, EventArgs e)
 		{
-			if (!File.Exists(GitExePath))
+			if (!File.Exists(MoveFromSvnToGit.GitExePath))
 			{
-				UserMessages.ShowErrorMessage("Cannot find git EXE (click OK to exit): " + GitExePath);
+				UserMessages.ShowErrorMessage("Cannot find git EXE (click OK to exit): " + MoveFromSvnToGit.GitExePath);
+				Application.Exit();
+			}
+			else if (!File.Exists(MoveFromSvnToGit.SvnExePath))
+			{
+				UserMessages.ShowErrorMessage("Cannot find svn EXE (click OK to exit): " + MoveFromSvnToGit.SvnExePath);
+				Application.Exit();
+			}
+			else if (!File.Exists(MoveFromSvnToGit.SvnserveExePath))
+			{
+				UserMessages.ShowErrorMessage("Cannot find svnserve EXE (click OK to exit): " + MoveFromSvnToGit.SvnserveExePath);
 				Application.Exit();
 			}
 		}
@@ -71,127 +80,43 @@ namespace MoveSvnToGit
 					textboxesKeys[i].Text = textboxesWithInitialWatermarkText[textboxesKeys[i]];
 		}
 
-		private bool ValidateAll()
+		//static bool isbusy = false;
+		private void buttonAccept_Click(object sender, EventArgs e)
 		{
+			//if (isbusy)
+			//{
+			//    UserMessages.ShowWarningMessage("Please wait, already busy.");
+			//    return;
+			//}
+			//isbusy = true;
+
 			foreach (var tb in textboxesWithInitialWatermarkText.Keys)
 				if (tb.Text == textboxesWithInitialWatermarkText[tb] || string.IsNullOrWhiteSpace(tb.Text))
 				{
 					UserMessages.ShowWarningMessage("Invalid path for " + tb.Tag.ToString());
 					tb.Focus();
-					return false;
+					return;
 				}
-			if (numericUpDownStartSvnRevisionNumber.Value < 0)
-			{
-				UserMessages.ShowWarningMessage("Enter valid valud for " + numericUpDownStartSvnRevisionNumber.Tag.ToString());
-				numericUpDownStartSvnRevisionNumber.Focus();
-				return false;
-			}
+
+			string svnservePath = null;
 			if (textBoxSvnUrl.Text.StartsWith("svn://localhost", StringComparison.InvariantCultureIgnoreCase)
-				&& Process.GetProcessesByName("svnserve").Length == 0)
+				|| textBoxSvnUrl.Text.StartsWith("file:", StringComparison.InvariantCultureIgnoreCase)
+				|| textBoxSvnUrl.Text[1] == ':' /*it is a file path like c:\.. or d:\...*/)
 			{
-				UserMessages.ShowWarningMessage("SvnUrl starts with 'svn://localhost', but no svnserve Processes found, this command will hence fail, please start svnserve first."
-					+ Environment.NewLine
-					+ Environment.NewLine + @"Most likely the svnserve.exe will sit in ProgramFiles\TortoiseSVN\bin or ProgramFile\Subversion\bin"
-					+ Environment.NewLine
-					+ Environment.NewLine + @"Working example is:"
-					+ Environment.NewLine + @"svnserve.exe --daemon --root c:\francois\dev\repos\vsprojects"
-					+ Environment.NewLine + "And then svn url can be:"
-					+ Environment.NewLine + "svn://localhost/windowsstartupmanager/trunk");
-				return false;
-			}
-			if (checkBoxInitRepo.Checked)//If requested to INIT the Git repo, check not already existing
-			{
-				string gitReportToInit = textBoxRemoteGitRepo.Text;
-				if (gitReportToInit.Contains("://"))
+				svnservePath = FileSystemInterop.SelectFolder("Please select the PARENT FOLDER of the local SVN repo, will be required to start svnserve.exe. Git-Svn cannot use local repo paths.");
+				if (svnservePath == null)
 				{
-					UserMessages.ShowWarningMessage("Found the text '://' for the Remote Git repo, meaning  the repository is not local, not currently supported to init a remote git repo");
-					return false;
-				}
-				if (Directory.Exists(gitReportToInit) && (Directory.GetFiles(gitReportToInit).Length > 0 || Directory.GetDirectories(gitReportToInit).Length > 0))
-				{
-					UserMessages.ShowWarningMessage("The Remote Git repo to INIT is a local directory but it is not empty, please ensure it is empty or the directory does not exist.");
-					return false;
-				}
-				if (!Directory.Exists(gitReportToInit))
-				{
-					try
-					{
-						Directory.CreateDirectory(gitReportToInit);
-						if (!Directory.Exists(gitReportToInit))
-						{
-							UserMessages.ShowWarningMessage("Unable to create Remote Git repo directory, cannot continue: " + gitReportToInit);
-							return false;
-						}
-					}
-					catch (Exception exc)
-					{
-						UserMessages.ShowWarningMessage("Unable to create Remote Git repo directory, cannot continue: " + exc.Message);
-						return false;
-					}
+					UserMessages.ShowWarningMessage("Operation cancelled to move svn url: " + textBoxSvnUrl.Text);
+					return;
 				}
 			}
-			return true;
-		}
-
-		bool isbusy = false;
-		private void buttonAccept_Click(object sender, EventArgs e)
-		{
-			if (!ValidateAll())
+			MoveFromSvnToGit tmpMove = new MoveFromSvnToGit(
+				textBoxSvnUrl.Text, checkBoxStandardLayout.Checked, (int)numericUpDownStartSvnRevisionNumber.Value,
+				textBoxLocalGitClonedFolder.Text, textBoxRemoteGitRepo.Text, checkBoxInitRepo.Checked,
+				svnservePath);
+			if (!tmpMove.ValidateAll(delegate { numericUpDownStartSvnRevisionNumber.Focus(); }))
 				return;
-
-			if (isbusy)
-			{
-				UserMessages.ShowWarningMessage("Please wait, already busy.");
-				return;
-			}
-
-			isbusy = true;
-			ThreadingInterop.DoAction(delegate
-			{
-				string remoteName = Path.GetFileNameWithoutExtension(textBoxRemoteGitRepo.Text);
-
-				if (!Directory.Exists(textBoxLocalGitClonedFolder.Text))
-					Directory.CreateDirectory(textBoxLocalGitClonedFolder.Text);
-
-				List<string> commandListArguments = new List<string>();
-
-				/*commandListArguments.Add(string.Format("svn init \"{0}\" \"{1}\"", textBoxSvnUrl.Text, textBoxLocalGitClonedFolder.Text));
-				commandListArguments.Add(string.Format("svn fetch"));*/
-				
-				commandListArguments.Add(string.Format("svn clone{0} -r{1}:HEAD \"{2}\" \"{3}\"", checkBoxStandardLayout.Checked ? " -s" : "", numericUpDownStartSvnRevisionNumber.Value, textBoxSvnUrl.Text, textBoxLocalGitClonedFolder.Text));
-
-				if (checkBoxInitRepo.Checked)
-					commandListArguments.Add(string.Format("init --bare \"{0}\"", textBoxRemoteGitRepo.Text));
-				//git remote add [-t <branch>] [-m <master>] [-f] [--tags|--no-tags] [--mirror=<fetch|push>] <name> <url>
-				commandListArguments.Add(string.Format("remote add \"{0}\" \"{1}\"", remoteName, textBoxRemoteGitRepo.Text));
-				commandListArguments.Add(string.Format("push \"{0}\" master", remoteName));
-
-				bool allSuccess = true;
-				foreach (var args in commandListArguments)
-					if (!RunGitCommand(args, textBoxLocalGitClonedFolder.Text))
-					{
-						allSuccess = false;
-						break;
-					}
-
-				if (allSuccess)
-					Process.Start("explorer", textBoxLocalGitClonedFolder.Text);
-
-				isbusy = false;
-			},
-			false);
-		}
-
-		private bool RunGitCommand(string arguments, string workingDir)
-		{
-			int exitCode;
-			bool result = ProcessesInterop.StartAndWaitProcessRedirectOutput(
-				new System.Diagnostics.ProcessStartInfo(GitExePath, arguments) { WorkingDirectory = workingDir },
-				(obj, output) => { if (output != null) AppendMessage(output); },
-				(obj, error) => { if (error != null) AppendMessage("ERROR: " + error); },
-				out exitCode);
-			if (result) AppendMessage("SUCCESS: arguments = " + arguments);
-			return result;
+			tmpMove.MoveNow(AppendMessage, false, true, true);
 		}
 
 		private void AppendMessage(string message)
@@ -212,6 +137,31 @@ namespace MoveSvnToGit
 		private string GetCurrentDateString()
 		{
 			return "[" + DateTime.Now.ToString("HH:mm:ss") + "] ";
+		}
+
+		private void buttonAllInFolder_Click(object sender, EventArgs e)
+		{
+			string rootSvnFolder = FileSystemInterop.SelectFolder(
+				"Select a root folder to search for all subversion controlled (svn checkouts) subfolders (will look for .svn folder inside each).",
+				@"C:\Francois\Dev\VSprojects",
+				Environment.SpecialFolder.MyComputer, this);
+			if (rootSvnFolder == null) return;
+			string destinationFolderForGitClones = FileSystemInterop.SelectFolder(
+				"Select a root destination folder to place Git version controlled folders (git cloned)",
+				@"c:\francois\tmp\SvnToGit\ClonedFromSvn",
+				Environment.SpecialFolder.MyComputer, this);
+			if (destinationFolderForGitClones == null) return;
+			string destinationRootForGitRemoteRepos = FileSystemInterop.SelectFolder(
+				"Select a root destination folder where the Git repos will be initialized (the 'remote' repos)",
+				@"c:\francois\tmp\SvnToGit\_gitRepos",
+				Environment.SpecialFolder.MyComputer, this);
+			if (destinationRootForGitRemoteRepos == null) return;
+			MoveFromSvnToGit.MoveAllValidSvnCheckoutsInFolderToGitClones(
+				rootSvnFolder,
+				destinationFolderForGitClones,
+				destinationRootForGitRemoteRepos,
+				AppendMessage,
+				UserMessages.Confirm("Do you want to automatically close svnserve.exe processes when we require to start one for local svn repos? (Choose no to be prompted every time)."));
 		}
 	}
 }

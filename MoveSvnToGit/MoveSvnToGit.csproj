@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -68,28 +68,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\..\..\..\Francois\Dev\VSprojects\SharedClasses\MoveFromSvnToGit.cs">
+    <Compile Include="..\..\SharedClasses\MoveFromSvnToGit.cs">
       <Link>MoveFromSvnToGit.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\..\..\..\..\Francois\Dev\VSprojects\SharedClasses\ProcessesInterop.cs">
+    <Compile Include="..\..\SharedClasses\ProcessesInterop.cs">
       <Link>ProcessesInterop.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\..\..\..\..\Francois\Dev\VSprojects\SharedClasses\ThreadingInterop.cs">
+    <Compile Include="..\..\SharedClasses\ThreadingInterop.cs">
       <Link>ThreadingInterop.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\..\..\..\..\Francois\Dev\VSprojects\SharedClasses\UserMessages.cs">
+    <Compile Include="..\..\SharedClasses\UserMessages.cs">
       <Link>UserMessages.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="..\..\..\..\..\..\..\Francois\Dev\VSprojects\SharedClasses\UserMessages.designer.cs">
+    <Compile Include="..\..\SharedClasses\UserMessages.designer.cs">
       <Link>UserMessages.designer.cs</Link>
       <DependentUpon>UserMessages.cs</DependentUpon>
     </Compile>
-    <Compile Include="..\..\..\..\..\..\..\Francois\Dev\VSprojects\SharedClasses\UserMessageWithTextbox.cs">
+    <Compile Include="..\..\SharedClasses\UserMessageWithTextbox.cs">
       <Link>UserMessageWithTextbox.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="..\..\..\..\..\..\..\Francois\Dev\VSprojects\SharedClasses\UserMessageWithTextbox.designer.cs">
+    <Compile Include="..\..\SharedClasses\UserMessageWithTextbox.designer.cs">
       <Link>UserMessageWithTextbox.designer.cs</Link>
       <DependentUpon>UserMessageWithTextbox.cs</DependentUpon>
     </Compile>
@@ -118,11 +118,11 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="..\..\..\..\..\..\..\Francois\Dev\VSprojects\SharedClasses\UserMessages.resx">
+    <EmbeddedResource Include="..\..\SharedClasses\UserMessages.resx">
       <Link>UserMessages.resx</Link>
       <DependentUpon>UserMessages.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\..\..\..\Francois\Dev\VSprojects\SharedClasses\UserMessageWithTextbox.resx">
+    <EmbeddedResource Include="..\..\SharedClasses\UserMessageWithTextbox.resx">
       <Link>UserMessageWithTextbox.resx</Link>
       <DependentUpon>UserMessageWithTextbox.cs</DependentUpon>
     </EmbeddedResource>

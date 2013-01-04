@@ -1,6 +1,6 @@
 ﻿namespace MoveSvnToGit
 {
-	partial class Form1
+	partial class MainForm
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -41,6 +41,7 @@
 			this.checkBoxStandardLayout = new System.Windows.Forms.CheckBox();
 			this.checkBoxInitRepo = new System.Windows.Forms.CheckBox();
 			this.buttonAllInFolder = new System.Windows.Forms.Button();
+			this.label5 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownStartSvnRevisionNumber)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -113,7 +114,7 @@
 			// buttonAccept
 			// 
 			this.buttonAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.buttonAccept.Location = new System.Drawing.Point(501, 331);
+			this.buttonAccept.Location = new System.Drawing.Point(501, 342);
 			this.buttonAccept.Name = "buttonAccept";
 			this.buttonAccept.Size = new System.Drawing.Size(65, 23);
 			this.buttonAccept.TabIndex = 0;
@@ -131,7 +132,7 @@
 			this.textBoxMessages.Name = "textBoxMessages";
 			this.textBoxMessages.ReadOnly = true;
 			this.textBoxMessages.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-			this.textBoxMessages.Size = new System.Drawing.Size(554, 161);
+			this.textBoxMessages.Size = new System.Drawing.Size(554, 172);
 			this.textBoxMessages.TabIndex = 6;
 			// 
 			// label4
@@ -188,7 +189,8 @@
 			// 
 			// buttonAllInFolder
 			// 
-			this.buttonAllInFolder.Location = new System.Drawing.Point(12, 331);
+			this.buttonAllInFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.buttonAllInFolder.Location = new System.Drawing.Point(12, 342);
 			this.buttonAllInFolder.Name = "buttonAllInFolder";
 			this.buttonAllInFolder.Size = new System.Drawing.Size(75, 23);
 			this.buttonAllInFolder.TabIndex = 10;
@@ -197,11 +199,23 @@
 			this.buttonAllInFolder.Visible = false;
 			this.buttonAllInFolder.Click += new System.EventHandler(this.buttonAllInFolder_Click);
 			// 
-			// Form1
+			// label5
+			// 
+			this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.label5.AutoSize = true;
+			this.label5.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.label5.Location = new System.Drawing.Point(530, 372);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(35, 13);
+			this.label5.TabIndex = 11;
+			this.label5.Text = "About";
+			// 
+			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(578, 366);
+			this.ClientSize = new System.Drawing.Size(578, 394);
+			this.Controls.Add(this.label5);
 			this.Controls.Add(this.buttonAllInFolder);
 			this.Controls.Add(this.checkBoxInitRepo);
 			this.Controls.Add(this.checkBoxStandardLayout);
@@ -216,7 +230,7 @@
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.textBoxSvnUrl);
 			this.DoubleBuffered = true;
-			this.Name = "Form1";
+			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Move SVN to Git";
 			this.Shown += new System.EventHandler(this.Form1_Shown);
@@ -241,6 +255,7 @@
 		private System.Windows.Forms.CheckBox checkBoxStandardLayout;
 		private System.Windows.Forms.CheckBox checkBoxInitRepo;
 		private System.Windows.Forms.Button buttonAllInFolder;
+		private System.Windows.Forms.Label label5;
 	}
 }
 

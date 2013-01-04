@@ -8,7 +8,7 @@ using SharedClasses;
 
 namespace MoveSvnToGit
 {
-	public partial class Form1 : Form
+	public partial class MainForm : Form
 	{
 		/* Inststructions to make use of svn://localhost
 		 * In TortoiseSVN\bin (or Subversion\bin) forlder run svnserve.exe as follows:
@@ -20,7 +20,7 @@ namespace MoveSvnToGit
 		Dictionary<TextBox, string> textboxesWithInitialWatermarkText = new Dictionary<TextBox, string>();
 		List<MoveFromSvnToGit> foldersToMove = new List<MoveFromSvnToGit>();
 
-		public Form1()
+		public MainForm()
 		{
 			InitializeComponent();
 
